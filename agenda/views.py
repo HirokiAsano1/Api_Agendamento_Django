@@ -4,6 +4,7 @@ from agenda.serializers import AgendamentoSerializer
 from django.http import JsonResponse 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -23,20 +24,17 @@ def agendamento_details(request , id):
         obj.delete()
         return Response(status=204)
 
-
-
-@api_view(http_method_names=["GET","POST"])
-def agendamento_list(request):
-    if request.method == "GET":
+class AgendamentoList(APIView):
+    def get(self,request):
         qs = Agendamento.objects.all()
         serializer = AgendamentoSerializer(qs, many=True)
         return JsonResponse(serializer.data, safe=False)
-    
-    if request.method == "POST":
+
+    def post(self,request):
         data = request.data
         serializer = AgendamentoSerializer(data=data)
         if serializer.is_valid():
-            validated_data = serializer.validated_data
             serializer.save() # metodo padrao criado pelo djangoRest
             return JsonResponse(serializer.data, status = 201)
         return JsonResponse(serializer.errors, status = 404)
+
