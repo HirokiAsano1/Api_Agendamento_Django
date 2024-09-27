@@ -16,7 +16,7 @@ def agendamento_details(request , id):
     if request.method == "PATCH":
         serializer = AgendamentoSerializer(obj, data=request.data, partial =True) #se for passado no parametro do serializer obj e data , o metodo ira puxar seriliazer update
         if serializer.is_valid():
-            serializer.save()# def update do serializer               
+            serializer.save()# metodo padrao criado pelo djangoRest             
             return JsonResponse(serializer.data,status=200)
         return JsonResponse(serializer.errors, status=400)
     if request.method == "DELETE":     
@@ -37,6 +37,6 @@ def agendamento_list(request):
         serializer = AgendamentoSerializer(data=data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            serializer.save() # metodo contruido no propio serializer ( create)
+            serializer.save() # metodo padrao criado pelo djangoRest
             return JsonResponse(serializer.data, status = 201)
         return JsonResponse(serializer.errors, status = 404)
