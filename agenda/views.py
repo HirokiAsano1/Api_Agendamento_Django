@@ -5,22 +5,27 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 
 # Create your views here.
 
-@api_view(http_method_names=["GET","PATCH","DELETE"])
-def agendamento_details(request , id):
-    obj = get_object_or_404(Agendamento, id = id) # busa o obj no banco pelo id
-    if request.method == "GET":
+class AgendamentoDetail(APIView):
+    def get (self,request,id):
+        obj = get_object_or_404(Agendamento, id = id) # busa o obj no banco pelo id
         serializer = AgendamentoSerializer(obj) #transformas os campos dos obj em Json
         return JsonResponse(serializer.data)
-    if request.method == "PATCH":
-        serializer = AgendamentoSerializer(obj, data=request.data, partial =True) #se for passado no parametro do serializer obj e data , o metodo ira puxar seriliazer update
+    
+    def patch(self,request,id):
+        obj = get_object_or_404(Agendamento, id = id) # busa o obj no banco pelo id
+        serializer = AgendamentoSerializer(obj, data=request.data, partial =True)
         if serializer.is_valid():
             serializer.save()# metodo padrao criado pelo djangoRest             
             return JsonResponse(serializer.data,status=200)
         return JsonResponse(serializer.errors, status=400)
-    if request.method == "DELETE":     
+    
+    def delete(self,request,id):
+        obj = get_object_or_404(Agendamento, id = id) # busa o obj no banco pelo id
         obj.delete()
         return Response(status=204)
 
