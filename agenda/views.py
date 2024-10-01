@@ -9,7 +9,9 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
 from django.contrib.auth.models import User
-import datetime
+from rest_framework.permissions import IsAdminUser
+from datetime import datetime
+from agenda.utils import get_horarios_disponiveis
 
 # Create your views here.
 
@@ -46,16 +48,20 @@ class AgendamentoList(generics.ListCreateAPIView): #os metodo do crud get(all) e
 class PrestadorList(generics.ListAPIView): #Listar os Prestadores de Seriços          
     serializer_class = PrestadorSerializer
     queryset = User.objects.all()
-
+    permission_classes = [IsAdminUser]
         
 
-'''@api_view (http_method_names=["GET"])
+@api_view(http_method_names=["GET"])
 def get_horarios(request):
     data = request.query_params.get("data")
-    if not data :
-        data = datetime.now().date()
+    
+    if not data:
+        data = datetime.now().date()  # Se nenhum valor for passado, usa a data atual
     else:
-        data = datetime.fromisoformat((data).date())
+        try:
+            data = datetime.fromisoformat(data).date()  # Tenta converter a string para data
+        except ValueError:
+            return JsonResponse({'error': 'Data inválida, use o formato YYYY-MM-DD'}, status=400)
 
     horarios_disponiveis = sorted(list(get_horarios_disponiveis(data)))
-    return JsonResponse(horarios_disponiveis, safe=False)'''
+    return JsonResponse(horarios_disponiveis, safe=False)
