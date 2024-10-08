@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: Agendamento
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 24280122
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"  # Expor a porta do PostgreSQL para o host
+
+  sge-app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_NAME: Agendamento
+      DB_USER: postgres
+      DB_PASSWORD: 24280122
+      DB_HOST: db 
+      DB_PORT: 5432
+
+volumes:
+  postgres_data:
